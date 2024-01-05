@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Data Display</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #333;
+        }
+        #gfg {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .cardTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+
+        }
+        .cardTable th, .cardTable td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .detail-row:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+	<h1>Weekly Customer Sales Detail</h1>
+    
+    
+    <div id="current_date">
+        <script>
+            date = new Date();
+            year = date.getFullYear();
+            month = date.getMonth() + 1;
+            day = date.getDate();
+            document.getElementById("current_date").innerHTML = "From Date: " + month + "/" + day + "/" + year;
+        </script>
+    </div>
+    <p id="current_date"></p>
+
+    <div id="before_date">
+        <script>
+            date = new Date();
+            year = date.getFullYear();
+            month = date.getMonth()+1;
+            day = day-7;
+            if (day<=0){
+                month = month-1;
+                if (month<=0){
+                    month = month+12;
+                    day = day+31;
+                }
+            }
+            document.getElementById("before_date").innerHTML = "To Date: " + month + "/" + day + "/" + year;
+        </script>
+    </div>
+    <p id="before_date"></p>
+
+	<input type="text" id="gfg" placeholder="Enter Customer">
+
+	<div id="dataContainer">
+    	{% for df_group in df_list %}
+        	<table border="1" class="cardTable">
+            	<thead>
+                	<tr class="cardname-header">
+                    	<th colspan="4">{{ df_group['CardName'].iloc[0] }}</th>
+                	</tr>
+                	<tr>
+                    	<th>Item Code</th>
+                    	<th>Description</th>
+                    	<th>Total Quantity</th>
+                    	<th>Total Amount</th>
+                	</tr>
+            	</thead>
+            	<tbody>
+                	{% for index, row in df_group.iterrows() %}
+                	<tr class="detail-row">
+                    	<td>{{ row['ItemCode'] }}</td>
+                    	<td>{{ row['Dscription'] }}</td>
+                    	<td>{{ row['TotalQuan'] }}</td>
+                    	<td>{{ row['TotalAmnt'] }}</td>
+                	</tr>
+                    {% if loop.last %}
+                    <tr class="overall-total-row">
+                        <td colspan="3">Overall Total</td>
+                        <td>{{ row['OverallTotal'] }}</td>
+                    </tr>
+                    {% endif %}
+                	{% endfor %}
+            	</tbody>
+        	</table>
+    	{% endfor %}
+	</div>
+
+	<script>
+    	$(document).ready(function() {
+        	$("#gfg").on("keyup", function() {
+            	var value = $(this).val().toLowerCase();
+            	$("#dataContainer .cardTable").filter(function() {
+                	var cardName = $(this).find(".cardname-header th").text().toLowerCase();
+                	var isVisible = cardName.indexOf(value) > -1;
+                	$(this).toggle(isVisible);
+            	});
+        	});
+    	});
+	</script>
+
+</body>
+</html>
+
+
